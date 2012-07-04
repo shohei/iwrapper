@@ -1,0 +1,17 @@
+content internote  jar:chrome/internote.jar!/content/
+overlay chrome://browser/content/browser.xul chrome://internote/content/internote.xul
+
+resource internotejs components/
+
+locale internote en-US jar:chrome/internote.jar!/locale/en-US/
+
+locale internote es-ES jar:chrome/internote.jar!/locale/es-ES/
+locale internote en-GB jar:chrome/internote.jar!/locale/en-GB/
+locale internote fr    jar:chrome/internote.jar!/locale/fr/
+locale internote hu    jar:chrome/internote.jar!/locale/hu/
+locale internote pl    jar:chrome/internote.jar!/locale/pl/
+locale internote sv-SE jar:chrome/internote.jar!/locale/sv-SE/
+locale internote uk    jar:chrome/internote.jar!/locale/uk/
+
+skin internote classic/1.0 jar:chrome/internote.jar!/skin/
+style chrome://global/content/customizeToolbar.xul chrome://internote/skin/overlay.css

@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+    <em:name>Internote</em:name>
+    <em:description>Persistent sticky notes for Firefox.</em:description>
+
+    <em:creator>Matthew Tuck</em:creator>
+
+    <em:developer>Tim Horton (Internote2, Original Developer)</em:developer>
+    <em:developer>Leszek(teo)Życzkowski (Internote3, XUL/Localization Fixes)</em:developer>
+
+    <em:contributor>Ildikó Balla (Internote3, Beta Testing, Logo)</em:contributor>
+    <em:contributor>Justin Lewis (Internote2, Beta Testing)</em:contributor>
+    <em:contributor>Robert Horton (Internote2, Beta Testing)</em:contributor>
+    
+    <em:translator>Goofy (French)</em:translator>
+    <em:translator>planekati (Hungarian)</em:translator>
+    <em:translator>Leszek(teo)Życzkowski (Polish)</em:translator>
+    <em:translator>urko (Spanish)</em:translator>
+    <em:translator>Mikael Hiort af Ornäs (Swedish)</em:translator>
+    <em:translator>Yaroslav Krytsun (Ukrainian)</em:translator>
+    
+    <em:id>{e3631030-7c02-11da-a72b-0800200c9a66}</em:id>
+    <em:version>3.0.1</em:version>
+    <em:type>2</em:type>
+    
+    <em:aboutURL>chrome://internote/content/internote-dlg-about.xul</em:aboutURL>
+    <em:optionsURL>chrome://internote/content/internote-dlg-prefs.xul</em:optionsURL>
+    <em:homepageURL>http://internote.sourceforge.net/</em:homepageURL>
+    <em:iconURL>chrome://internote/skin/internote128.png</em:iconURL>
+    
+    <!-- Firefox -->
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>3.0</em:minVersion>
+        <em:maxVersion>4.0.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+    <!-- Flock -->
+    <!-- Disabled, if you know what you're doing, give it a go.
+
+    <em:targetApplication>
+      <Description>
+        <em:id>{a463f10c-3994-11da-9945-000d60ca027b}</em:id>
+        <em:minVersion>0.6</em:minVersion>
+        <em:maxVersion>1.0+</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
+    -->
+  </Description>
+</RDF>

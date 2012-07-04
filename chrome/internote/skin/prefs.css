@@ -1,0 +1,31 @@
+radio[pane] {
+    list-style-image: url("chrome://internote/skin/prefspaneicons.png");
+}
+
+radio[pane=facebookPrefsPane] {
+    -moz-image-region: rect(0px, 32px, 32px, 0px);
+}
+
+radio[pane=facebookPrefsPane]:hover, radio[pane=facebookPrefsPane][selected="true"]  {
+    -moz-image-region: rect(32px, 32px, 64px, 0px)
+}
+
+radio[pane=generalPrefsPane] {
+    -moz-image-region: rect(0px, 32px, 32px, 0px);
+}
+
+radio[pane=generalPrefsPane]:hover, radio[pane=generalPrefsPane][selected="true"]  {
+    -moz-image-region: rect(32px, 32px, 64px, 0px)
+}
+
+radio[pane=appearancePrefsPane] {
+    -moz-image-region: rect(0px, 64px, 32px, 32px);
+}
+
+radio[pane=appearancePrefsPane]:hover, radio[pane=appearancePrefsPane][selected="true"]  {
+    -moz-image-region: rect(32px, 64px, 64px, 32px)
+}
+
+description[disabled="true"] {
+	color: gray;
+}
