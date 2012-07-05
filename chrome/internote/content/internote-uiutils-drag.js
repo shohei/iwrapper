@@ -85,8 +85,8 @@ dragFinished: function(wasCompleted, wasDrag)
   var height = note.height;
   var url = note.url;
   var backcolor = note.backColor;
-  var num = note.num; // ページごとの固有ID
-
+  var key = note.key; // ページごとの固有ID
+  
   var param = {
     user : user,
     comment : comment,
@@ -96,7 +96,7 @@ dragFinished: function(wasCompleted, wasDrag)
     height : height,
     url : url,
     backcolor : backcolor,
-    num : num,
+    key : key,
     callback : '?',
   };
   $.getJSON(server_url, param, function(data){console.log(data);});

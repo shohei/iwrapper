@@ -750,8 +750,38 @@ userCreatesNote: function()
             // Now attempt to focus new note.  We do it here as we only focus notes created in this window,
             // not those created on page load, on another window or due to manager changes.
             var uiNote = this.uiNoteLookup[note.num];
-            Firebug.Console.log(uiNote.note.left);
-			
+            Firebug.Console.log(uiNote.note);
+            note = uiNote.note;
+		 //Send http request for the heroku server application
+	// iwrapper2012.heroku.com
+	    function sendHeroku(note){
+	    var server_url = "http://iwrapper2012.heroku.com/notes/add.json?";
+	  var user = "noName";
+	  var comment = note.text;
+	  var left = note.left;
+	  var top = note.top;
+	  var width = note.width;
+	  var height = note.height;
+	  var url = note.url;
+	  var backcolor = note.backColor;
+	  var key = note.key; // ページごとの固有ID
+	
+	  var param = {
+	    user : user,
+	    comment : comment,
+	    left : left,
+	    top : top,
+	    width : width,
+	    height : height,
+	    url : url,
+	    backcolor : backcolor,
+	    key : key,
+	    callback : '?',
+	  };
+	  $.getJSON(server_url, param, function(data){console.log(data);});
+	};
+	  sendHeroku(note); 
+
             this.utils.assertError(uiNote != null, "UINote not found when trying to focus note.", note.num);
             
             this.displayUI.focusNote(uiNote);
@@ -814,7 +844,7 @@ userRemovesNote: function(elementOrEvent)
   var height = note.height;
   var url = note.url;
   var backcolor = note.backColor;
-  var num = note.num; // ページごとの固有ID
+  var key = note.key; // ページごとの固有ID
 
   var param = {
     user : user,
@@ -825,7 +855,7 @@ userRemovesNote: function(elementOrEvent)
     height : height,
     url : url,
     backcolor : backcolor,
-    num : num,
+    key : key,
     callback : '?',
   };
   $.getJSON(server_url, param, function(data){console.log(data);});
@@ -1138,7 +1168,7 @@ userBlursNote: function(event)
 		  var height = note.height;
 		  var url = note.url;
 		  var backcolor = note.backColor;
-		  var num = note.num; // ページごとの固有ID
+		  var key = note.key; // ページごとの固有ID
 		
 		  var param = {
 		    user : user,
@@ -1149,11 +1179,12 @@ userBlursNote: function(event)
 		    height : height,
 		    url : url,
 		    backcolor : backcolor,
-		    num : num,
+		    key : key,
 		    callback : '?',
 		     };
 		  $.getJSON(server_url, param, function(data){console.log(data);});
 		};
+	  note = uiNote.note;
       sendHeroku(note); 
 
     }

@@ -47,7 +47,7 @@ StorageEvent: function StorageEvent(note, data1, data2)
     this.data2 = data2;
 },
 
-InternoteNote: function InternoteNote(url, matchType, ignoreAnchor, ignoreParams, text, left, top, width, height, backColor, foreColor, createTime, modfnTime, zIndex, isMinimized, isHTML)
+InternoteNote: function InternoteNote(url, matchType, ignoreAnchor, ignoreParams, text, left, top, width, height, backColor, foreColor, createTime, modfnTime, zIndex, isMinimized, isHTML,key)
 {
     if (arguments.length >= 1)
     {
@@ -68,6 +68,8 @@ InternoteNote: function InternoteNote(url, matchType, ignoreAnchor, ignoreParams
         this.zIndex       = zIndex;
         this.isMinimized  = isMinimized;
         this.isHTML       = isHTML;
+         
+        this.key = key;        
     }
 },
 
@@ -592,8 +594,8 @@ loadInternoteV3: function(storageDoc, includeXML)
         var zIndex      = this.utils.getXMLInt(element, "zIndex", 0);
         var isMinimized = this.utils.getXMLBoolean(element, "isMinimized", false);
         var isHTML      = this.utils.getXMLBoolean(element, "isHTML",      false);
-        
-        var note = new this.InternoteNote(url, matchType, ignoreAnchor, ignoreParams, text,
+
+                var note = new this.InternoteNote(url, matchType, ignoreAnchor, ignoreParams, text,
                                           left, top, noteWidth, noteHeight, backColor, foreColor,
                                           createTime, modfnTime, zIndex, isMinimized, isHTML);
         if (includeXML)
@@ -627,9 +629,25 @@ addWelcomeNote: function()
     
     var left = 10;
     var top  = 10;
+
+        
+    var randobet = function(n, b) {
+	b = b || '';
+	var a = 'abcdefghijklmnopqrstuvwxyz'
+		+ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		+ '0123456789'
+		+ b;
+	a = a.split('');
+	var s = '';
+	for (var i = 0; i < n; i++) {
+    	s += a[Math.floor(Math.random() * a.length)];
+	    }
+	  return s;
+    };
+     var key = randobet(20);
     
     return this.addNote(new this.InternoteNote(url, matchType, ignoreAnchor, ignoreParams, welcomeText, left, top, noteWidth, noteHeight,
-                                               backColor, foreColor, currTime, currTime, zIndex, isMinimized, isHTML));
+                                               backColor, foreColor, currTime, currTime, zIndex, isMinimized, isHTML,key));
 },
 
 getDefaultDims: function()
@@ -661,10 +679,25 @@ addSimpleNote: function(url, text, noteTopLeft, noteDims)
     var ignoreAnchor = true;
     var ignoreParams = true;
     
+   var randobet = function(n, b) {
+	b = b || '';
+	var a = 'abcdefghijklmnopqrstuvwxyz'
+		+ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		+ '0123456789'
+		+ b;
+	a = a.split('');
+	var s = '';
+	for (var i = 0; i < n; i++) {
+    	s += a[Math.floor(Math.random() * a.length)];
+	    }
+	  return s;
+    };
+     var key = randobet(20);
+    
     return this.addNote(new this.InternoteNote(url, matchType, ignoreAnchor, ignoreParams, text,
                                                noteTopLeft[0], noteTopLeft[1], noteDims[0], noteDims[1],
                                                backColor, foreColor,
-                                               currTime, currTime, zIndex, isMinimized, isHTML));
+                                               currTime, currTime, zIndex, isMinimized, isHTML,key));
 },
 
 // This doesn't do any XML/saving stuff.
@@ -712,6 +745,9 @@ addNote: function(note)
     note.xml.setAttribute("zIndex",       note.zIndex      );
     note.xml.setAttribute("isMinimized",  note.isMinimized );
     note.xml.setAttribute("isHTML",       note.isHTML      );
+
+    //generate identifying key for each note
+    note.xml.setAttribute("key",       note.key );
     
     // XXX Delete next version - for downgrade compatibility
     note.xml.setAttribute("isURLRegexp",  note.matchType == this.URL_MATCH_REGEXP);
