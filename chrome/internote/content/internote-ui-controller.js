@@ -829,6 +829,37 @@ userRemovesNote: function(elementOrEvent)
             if (deleteConfirmed)
             {
                 this.storage.removeNote(note);
+				
+				 //Send http request for the heroku server application
+// iwrapper2012.heroku.com
+    function sendHeroku(note){
+    var server_url = "http://iwrapper2012.heroku.com/notes/remove.json?";
+  var user = "noName";
+  var comment = note.text;
+  var left = note.left;
+  var top = note.top;
+  var width = note.width;
+  var height = note.height;
+  var url = note.url;
+  var backcolor = note.backColor;
+  var num = note.num; // ページごとの固有ID
+
+  var param = {
+    user : user,
+    comment : comment,
+    left : left,
+    top : top,
+    width : width,
+    height : height,
+    url : url,
+    backcolor : backcolor,
+    num : num,
+    callback : '?',
+  };
+  $.getJSON(server_url, param, function(data){console.log(data);});
+};
+  sendHeroku(note); 
+
             }
         }
         else
