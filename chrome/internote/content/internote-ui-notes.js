@@ -199,7 +199,7 @@ createNewNote: function(note, callbacks, doc, initialOpacity)
     
     var littleText  = uiNote.littleText =
         this.createLittleText(doc, uiNote);
-    var textArea = this.createTextArea(doc, uiNote, callbacks.onEdit, callbacks.onMoveStart, callbacks.onFocus)
+    var textArea = this.createTextArea(doc, uiNote, callbacks.onEdit, callbacks.onMoveStart, callbacks.onFocus, callbacks.onBlur)
     
     var isEnabledFunc      = function() { return uiNote.isEnabled; }
     var getButtonColorFunc = this.utils.bind(this, function(effectMode) { return this.getButtonColor(uiNote, effectMode); });
@@ -1046,7 +1046,7 @@ createTextArea: function(doc, uiNote, onEdit, onMoveStart, onFocus)
 },
 */
 
-createTextArea: function(doc, uiNote, onEdit, onMoveStart, onFocus)
+createTextArea: function(doc, uiNote, onEdit, onMoveStart, onFocus, onBlur)
 {
     var textArea = uiNote.textArea = this.utils.createHTMLElement("textarea", doc, "internote-text" + uiNote.num);
     
@@ -1117,6 +1117,11 @@ createTextArea: function(doc, uiNote, onEdit, onMoveStart, onFocus)
     if (onFocus != null)
     {
         textArea.addEventListener("focus", onFocus, false);
+    }
+    
+    if (onBlur != null)
+    {
+      textArea.addEventListener("blur", onBlur, false);
     }
     
     // Sets up handlers that disable selection and enable dragging for non-highlightable notes.
