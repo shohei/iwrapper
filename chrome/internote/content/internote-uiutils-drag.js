@@ -22,34 +22,6 @@
 // and call dragStarted().  The handler will distingush a drag (moved an adequate distance)
 // from a click (didn't), as well as handling the ESC key, both through parameters to onDragFinished.
 
-//Send http request for the heroku server application
-// iwrapper2012.heroku.com
- function sendHeroku(note) {
-  // クロスドメイン通信なので、callback=?を付ける
-  var url = "http://iwrapper2012.heroku.com/notes/add.json?";
-  var user = "noName";
-  var comment = note.text;
-  var left = note.left;
-  var top = note.top;
-  var width = note.width;
-  var height = note.height;
-  var url = note.url;
-  var backcolor = note.backColor;
-  var num = note.num; // ページごとの固有ID
-  
-  var loc_y = object.offset().top;  
-  console.log(loc_x,loc_y);
-  var param = {
-    user: user,
-    comment: comment,
-    loc_x : loc_x,
-    loc_y : loc_y,
-    callback : '?',
-  };
-  $.getJSON(url, param, function(data){console.log(data);});
-};
-
-
 internoteSharedGlobal_e3631030_7c02_11da_a72b_0800200c9a66.utils.DragHandler =
 function DragHandler(utils, chromeDoc, data)
 {
@@ -101,10 +73,38 @@ dragStarted: function(event)
 dragFinished: function(wasCompleted, wasDrag)
 {
     //dump("internoteUtilities.DragHandler.dragFinished\n");
-    alert('drag finished!');
-    //Firebug.Console.log(this.data);
-    note = this.data.note;
-    sendHeroku(note);
+ //Send http request for the heroku server application
+// iwrapper2012.heroku.com
+    function sendHeroku(note){
+    var server_url = "http://iwrapper2012.heroku.com/notes/add.json?";
+  var user = "noName";
+  var comment = note.text;
+  var left = note.left;
+  var top = note.top;
+  var width = note.width;
+  var height = note.height;
+  var url = note.url;
+  var backcolor = note.backColor;
+  var num = note.num; // ページごとの固有ID
+
+  var param = {
+    user : user,
+    comment : comment,
+    left : left,
+    top : top,
+    width : width,
+    height : height,
+    url : url,
+    backcolor : backcolor,
+    num : num,
+    callback : '?',
+  };
+  $.getJSON(server_url, param, function(data){console.log(data);});
+};
+
+  note = this.data.note;
+  sendHeroku(note); 
+       
     try
     {
         this.onDragFinished(wasCompleted, wasDrag, this.pointerOffset, this.data);
@@ -185,8 +185,7 @@ dragMouseMoved: function(event)
     {
         var pointerCurrentPos = [event.screenX, event.screenY];
         this.pointerOffset = this.utils.coordPairSubtract(pointerCurrentPos, this.pointerInitialPos);
-       //alert(pointerCurrentPos);
-
+        
         if (!this.hasBeenDragMovement && this.isAdequateDrag(this.pointerOffset))
         {
             //dump("  Has been movement.\n");

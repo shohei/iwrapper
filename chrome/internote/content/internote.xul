@@ -61,7 +61,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //jQuery loading for getJSON()
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
 
-
 <commandset id="mainCommandSet">
     <command id="cmd_newNote"             oncommand="internoteWindowGlobal_e3631030_7c02_11da_a72b_0800200c9a66.controller.userCreatesNote();" />
     <command id="cmd_minimizeAll"         oncommand="internoteWindowGlobal_e3631030_7c02_11da_a72b_0800200c9a66.controller.userMinimizesAll();" />
