@@ -197,6 +197,8 @@ init: function()
         onEdit:          this.utils.bind(this, this.userEditsNote),
         onClickBackSide: this.utils.bind(this, this.userClicksBackSideOfNote),
         onFocus:         this.utils.bind(this, this.userFocusesNote),
+        //when losing focus
+        onBlur:            this.utils.bind(this, this.userBlursNote),
     };
     
     var getViewportDimsFunc = this.utils.bind(this, function()
@@ -749,36 +751,6 @@ userCreatesNote: function()
             // not those created on page load, on another window or due to manager changes.
             var uiNote = this.uiNoteLookup[note.num];
             Firebug.Console.log(uiNote.note.left);
-			//Send http request for the heroku server application
-// iwrapper2012.heroku.com
-    function sendHeroku(note){
-    var server_url = "http://iwrapper2012.heroku.com/notes/add.json?";
-  var user = "noName";
-  var comment = note.text;
-  var left = note.left;
-  var top = note.top;
-  var width = note.width;
-  var height = note.height;
-  var url = note.url;
-  var backcolor = note.backColor;
-  var num = note.num; // ページごとの固有ID
-
-  var param = {
-    user : user,
-    comment : comment,
-    left : left,
-    top : top,
-    width : width,
-    height : height,
-    url : url,
-    backcolor : backcolor,
-    num : num,
-    callback : '?',
-  };
-  $.getJSON(server_url, param, function(data){console.log(data);});
-};
-  sendHeroku(uiNote.note); 
-
 			
             this.utils.assertError(uiNote != null, "UINote not found when trying to focus note.", note.num);
             
@@ -1087,6 +1059,7 @@ userEditsNote: function(event)
         var noteNum = this.utils.getNoteNum(event.target);
         var note = this.storage.allNotes[noteNum];
         this.storage.setText(note, event.target.value);
+        
     }
     catch (ex)
     {
@@ -1142,6 +1115,54 @@ userFocusesNote: function(event)
         this.utils.handleException("Exception caught when user focused note.", ex);
     }
 },
+
+//Added by shohei
+userBlursNote: function(event)
+{
+    //dump("userBlursNote\n");    
+    try
+    {
+        var noteNum = this.utils.getNoteNum(event.target);
+        var uiNote = this.uiNoteLookup[noteNum];
+        this.storage.raiseNote(uiNote.note);
+               //fire the send-data action
+        //Send http request for the heroku server application
+        // iwrapper2012.heroku.com
+        function sendHeroku(note){
+          var server_url = "http://iwrapper2012.heroku.com/notes/add.json?";
+		  var user = "noName";
+		  var comment = note.text;
+		  var left = note.left;
+		  var top = note.top;
+		  var width = note.width;
+		  var height = note.height;
+		  var url = note.url;
+		  var backcolor = note.backColor;
+		  var num = note.num; // ページごとの固有ID
+		
+		  var param = {
+		    user : user,
+		    comment : comment,
+		    left : left,
+		    top : top,
+		    width : width,
+		    height : height,
+		    url : url,
+		    backcolor : backcolor,
+		    num : num,
+		    callback : '?',
+		     };
+		  $.getJSON(server_url, param, function(data){console.log(data);});
+		};
+      sendHeroku(note); 
+
+    }
+    catch (ex)
+    {
+        this.utils.handleException("Exception caught when user blured note.", ex);
+    }
+},
+
 
 userTogglesDisplay: function(note)
 {
