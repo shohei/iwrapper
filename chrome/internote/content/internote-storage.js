@@ -630,7 +630,7 @@ addWelcomeNote: function()
     var left = 10;
     var top  = 10;
 
-        
+     /*   
     var randobet = function(n, b) {
 	b = b || '';
 	var a = 'abcdefghijklmnopqrstuvwxyz'
@@ -645,9 +645,9 @@ addWelcomeNote: function()
 	  return s;
     };
      var key = randobet(20);
-    
+    */
     return this.addNote(new this.InternoteNote(url, matchType, ignoreAnchor, ignoreParams, welcomeText, left, top, noteWidth, noteHeight,
-                                               backColor, foreColor, currTime, currTime, zIndex, isMinimized, isHTML,key));
+                                               backColor, foreColor, currTime, currTime, zIndex, isMinimized, isHTML));
 },
 
 getDefaultDims: function()
@@ -663,12 +663,9 @@ getDefaultDims: function()
 addSimpleNote: function(url, text, noteTopLeft, noteDims)
 {
     //dump("InternoteStorage.addSimpleNote\n");
-    
     this.utils.assertError(this.utils.isNonNegCoordPair(noteTopLeft), "NoteTopLeft not a coordinate.", noteTopLeft);
     this.utils.assertError(this.utils.isPositiveCoordPair(noteDims),  "NoteDims not dimensions.", noteDims);
-    
     var noteCount = this.allNotes.length;
-    
     var currTime     = new Date().getTime();
     var backColor    = this.BACKGROUND_COLOR_SWABS[this.prefs.getDefaultNoteColor()];
     var foreColor    = this.FOREGROUND_COLOR_SWABS[this.prefs.getDefaultTextColor()];
@@ -678,7 +675,6 @@ addSimpleNote: function(url, text, noteTopLeft, noteDims)
     var matchType    = this.URL_MATCH_URL;
     var ignoreAnchor = true;
     var ignoreParams = true;
-    
    var randobet = function(n, b) {
 	b = b || '';
 	var a = 'abcdefghijklmnopqrstuvwxyz'
@@ -693,8 +689,42 @@ addSimpleNote: function(url, text, noteTopLeft, noteDims)
 	  return s;
     };
      var key = randobet(20);
-    
     return this.addNote(new this.InternoteNote(url, matchType, ignoreAnchor, ignoreParams, text,
+                                               noteTopLeft[0], noteTopLeft[1], noteDims[0], noteDims[1],
+                                               backColor, foreColor,
+                                               currTime, currTime, zIndex, isMinimized, isHTML,key));
+},
+
+addSimpleNoteWithoutStore: function(url, text, noteTopLeft, noteDims)
+{
+    //dump("InternoteStorage.addSimpleNote\n");
+    this.utils.assertError(this.utils.isNonNegCoordPair(noteTopLeft), "NoteTopLeft not a coordinate.", noteTopLeft);
+    this.utils.assertError(this.utils.isPositiveCoordPair(noteDims),  "NoteDims not dimensions.", noteDims);
+    var noteCount = this.allNotes.length;
+    var currTime     = new Date().getTime();
+    var backColor    = this.BACKGROUND_COLOR_SWABS[this.prefs.getDefaultNoteColor()];
+    var foreColor    = this.FOREGROUND_COLOR_SWABS[this.prefs.getDefaultTextColor()];
+    var zIndex       = this.getMaxZIndex()[0] + 1;
+    var isMinimized  = false;
+    var isHTML       = false;
+    var matchType    = this.URL_MATCH_URL;
+    var ignoreAnchor = true;
+    var ignoreParams = true;
+   var randobet = function(n, b) {
+	b = b || '';
+	var a = 'abcdefghijklmnopqrstuvwxyz'
+		+ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		+ '0123456789'
+		+ b;
+	a = a.split('');
+	var s = '';
+	for (var i = 0; i < n; i++) {
+    	s += a[Math.floor(Math.random() * a.length)];
+	    }
+	  return s;
+    };
+     var key = randobet(20);
+    return this.addNoteWithoutStore(new this.InternoteNote(url, matchType, ignoreAnchor, ignoreParams, text,
                                                noteTopLeft[0], noteTopLeft[1], noteDims[0], noteDims[1],
                                                backColor, foreColor,
                                                currTime, currTime, zIndex, isMinimized, isHTML,key));
@@ -766,6 +796,61 @@ addNote: function(note)
     
     return note;
 },
+
+addNoteWithoutStore: function(note)
+{
+    //dump("InternoteStorage.addNote\n");
+    
+    this.utils.assertError(note.xml == null,     "Tried to add note with XML existing.");
+    
+    this.addNoteToList(note);
+    
+    note.xml = this.doc.createElement("note");
+    this.notesNode.appendChild(note.xml);
+    
+    // XXX Delete ID
+    note.xml.setAttribute("id",           0);
+    note.xml.setAttribute("guid",         this.utils.generateIdentifier());
+    
+    note.xml.setAttribute("url",          note.url         );
+    note.xml.setAttribute("matchType",    note.matchType   );
+    note.xml.setAttribute("ignoreAnchor", note.ignoreAnchor);
+    note.xml.setAttribute("ignoreParams", note.ignoreParams);
+    
+    note.xml.setAttribute("left",         note.left        );
+    note.xml.setAttribute("top",          note.top         );
+    note.xml.setAttribute("width",        note.width       );
+    note.xml.setAttribute("height",       note.height      );
+    note.xml.setAttribute("backColor",    note.backColor   );
+    note.xml.setAttribute("foreColor",    note.foreColor   );
+    note.xml.setAttribute("createTime",   note.createTime  );
+    note.xml.setAttribute("modfnTime",    note.modfnTime   );
+    note.xml.setAttribute("zIndex",       note.zIndex      );
+    note.xml.setAttribute("isMinimized",  note.isMinimized );
+    note.xml.setAttribute("isHTML",       note.isHTML      );
+
+    //generate identifying key for each note
+    note.xml.setAttribute("key",       note.key );
+    
+    // XXX Delete next version - for downgrade compatibility
+    note.xml.setAttribute("isURLRegexp",  note.matchType == this.URL_MATCH_REGEXP);
+    
+    var textNode = this.doc.createTextNode(note.text);
+    note.xml.appendChild(textNode);
+    textNode.nodeValue = note.text;
+    
+    //dump("Before\n");
+    if (!this.isInitialising)
+    {
+        this.scheduleXMLSave();
+        //dump("Dispatch\n");
+         //commented out below
+        //this.dispatchEvent("noteAdded", new this.StorageEvent(note, null));
+    }
+    
+    return note;
+},
+
 
 removeNote: function(note)
 {

@@ -49,7 +49,10 @@
  .getInterface(Components.interfaces.nsIDOMWindow).Firebug;
 //  Firebug.Console.log("hello, firebug console!");
 
+var NOTE_URL_AND_KEY = {"http://dummy.com" : ["dummykey"] };
+
 internoteWindowGlobal_e3631030_7c02_11da_a72b_0800200c9a66.controller = {
+
 
 DRAG_MODE_NONE:    0,
 DRAG_MODE_MOVE:    1,
@@ -494,12 +497,57 @@ uiNoteRemove: function(uiNote)
     this.utils.spliceFirstInstance(this.allUINotes, uiNote);
 },
 
+           //define as global function 
+apiCallback : function (data) { 
+        Firebug.Console.log("apiCallback function fired.");
+        Firebug.Console.log(NOTE_URL_AND_KEY);
+      var urls = [];
+          $.each(NOTE_URL_AND_KEY,function(url_tmp) {
+             urls.push(url_tmp);
+          }); 
+        for each (var dat in data) {    
+          if (urls.indexOf(dat["url"]) < 0) {
+            Firebug.Console.log("URL not yet added. so add URL andkey .");
+            NOTE_URL_AND_KEY[dat["url"]] = [dat["key"]];
+           var note_server =  
+            this.storage.addSimpleNoteWithoutStore(dat["url"],dat["comment"],
+            [dat["left"],dat["top"]],[dat["width"],dat["height"]]); 
+           note_server.key = dat["key"];
+           note_server.backcolor = dat["backcolor"];
+            var uiNote_server = this.noteUI.createNewNote(note_server, this.noteUICallbacks, document, 1);
+           //When finish
+           this.uiNoteAdd(uiNote_server);            
+          }  else if  ( NOTE_URL_AND_KEY[dat["url"]].indexOf( dat["key"]) >= 0  ) {  
+          Firebug.Console.log("already loaded, so break the for loop");
+            } else { 
+            Firebug.Console.log("キーのURLでアクセスしてみる");
+            Firebug.Console.log(NOTE_URL_AND_KEY[dat["url"]]);
+            NOTE_URL_AND_KEY[dat["url"]].push(dat["key"]);         
+            Firebug.Console.log(dat["key"]);
+            Firebug.Console.log("was added.");
+           var note_server =  
+            this.storage.addSimpleNoteWithoutStore(dat["url"],dat["comment"],
+            [dat["left"],dat["top"]],[dat["width"],dat["height"]]); 
+           note_server.key = dat["key"];
+           note_server.backcolor = dat["backcolor"];
+            var uiNote_server = this.noteUI.createNewNote(note_server, this.noteUICallbacks, document, 1);
+           //When finish
+           this.uiNoteAdd(uiNote_server);            
+         };
+        }
+     },
+
 changePage: function(newURL, isPageLoaded)
 {
     //dump("changePage\n");
-    
+    //NOTE_URL_AND_KEY.push(location.href);
+    //Firebug.Console.log(NOTE_URL_AND_KEY);
     // We might tab change to the same page, so we still need this ...
-    
+    //for each (var uiNote in this.allUINotes) {
+       //this.storage.removeNote(uiNote.note);
+     //  this.screenRemoveNote(uiNote);
+    //};
+   
     this.currentBrowser = this.utils.getCurrentBrowser(gBrowser);
     
     if (newURL == null)
@@ -555,7 +603,22 @@ changePage: function(newURL, isPageLoaded)
         if (this.allowNotesOnThisPage(newURL))
         {
             this.configureStorageWatcher(this.currentURL);
-            
+
+           //var  note_server_test = this.storage.addSimpleNote("http://dummy.com","dummy",[600,400],[300,300]); 
+           //var uiNote_server_test = this.noteUI.createNewNote(note_server_test, this.noteUICallbacks, document, 1);
+             //    this.uiNoteAdd(uiNote_server_test);          
+           
+           
+            //get data from API, by Shohei
+            var baseURL = "http://iwrapper2012.heroku.com/notes/get.json"
+            var param = {
+              url : this.currentURL,
+            }
+            Firebug.Console.log("before getJSON");
+            $.getJSON(baseURL, param, function(data){
+internoteWindowGlobal_e3631030_7c02_11da_a72b_0800200c9a66.controller.apiCallback(data);
+            });
+
             for each (var note in this.pageWatcher.noteMap)
             {
                 var uiNote = this.noteUI.createNewNote(note, this.noteUICallbacks, document, 1);
@@ -729,7 +792,8 @@ userCreatesNote: function()
             this.showMessage("NotOnThisPageMessage");
             return;
         }
-        
+
+        //消しても生成された
         this.maybeDisplayNotes();
            // console.log("uoooooooo");
         
@@ -752,35 +816,38 @@ userCreatesNote: function()
             var uiNote = this.uiNoteLookup[note.num];
             Firebug.Console.log(uiNote.note);
             note = uiNote.note;
-		 //Send http request for the heroku server application
-	// iwrapper2012.heroku.com
-	    function sendHeroku(note){
-	    var server_url = "http://iwrapper2012.heroku.com/notes/add.json?";
-	  var user = "noName";
-	  var comment = note.text;
-	  var left = note.left;
-	  var top = note.top;
-	  var width = note.width;
-	  var height = note.height;
-	  var url = note.url;
-	  var backcolor = note.backColor;
-	  var key = note.key; // ページごとの固有ID
-	
-	  var param = {
-	    user : user,
-	    comment : comment,
-	    left : left,
-	    top : top,
-	    width : width,
-	    height : height,
-	    url : url,
-	    backcolor : backcolor,
-	    key : key,
-	    callback : '?',
-	  };
-	  $.getJSON(server_url, param, function(data){console.log(data);});
-	};
-	  sendHeroku(note); 
+ 
+ /*
+  //Send http request for the heroku server application
+  // iwrapper2012.heroku.com
+      function sendHeroku(note){
+          var server_url = "http://iwrapper2012.heroku.com/notes/add.json?";
+    var user = "noName";
+    var comment = note.text;
+    var left = note.left;
+    var top = note.top;
+  var width = note.width;
+  var height = note.height;
+  var url = note.url;
+  var backcolor = note.backColor;
+  var key = note.key; // ページごとの固有ID
+
+  var param = {
+    user : user,
+    comment : comment,
+    left : left,
+    top : top,
+    width : width,
+    height : height,
+    url : url,
+    backcolor : backcolor,
+    key : key,
+    callback : '?',
+  };
+  $.getJSON(server_url, param, function(data){console.log(data);});
+};
+  sendHeroku(note); 
+*/
 
             this.utils.assertError(uiNote != null, "UINote not found when trying to focus note.", note.num);
             
@@ -831,36 +898,25 @@ userRemovesNote: function(elementOrEvent)
             if (deleteConfirmed)
             {
                 this.storage.removeNote(note);
-				
-				 //Send http request for the heroku server application
+   NOTE_URL_AND_KEY.splice($.inArray([note.url,note.key],NOTE_URL_AND_KEY),1);
+
+
+ //Send http request for the heroku server application
 // iwrapper2012.heroku.com
-    function sendHeroku(note){
+    function sendRemoveHeroku(note){
     var server_url = "http://iwrapper2012.heroku.com/notes/remove.json?";
-  var user = "noName";
-  var comment = note.text;
-  var left = note.left;
-  var top = note.top;
-  var width = note.width;
-  var height = note.height;
-  var url = note.url;
-  var backcolor = note.backColor;
-  var key = note.key; // ページごとの固有ID
+    var url = note.url;
+    var key = note.key; // ページごとの固有ID
 
   var param = {
-    user : user,
-    comment : comment,
-    left : left,
-    top : top,
-    width : width,
-    height : height,
-    url : url,
-    backcolor : backcolor,
-    key : key,
+      url : url,
+      key : key,
     callback : '?',
   };
-  $.getJSON(server_url, param, function(data){console.log(data);});
+  Firebug.Console.log("before getJSON for removal");
+  $.getJSON(server_url, param, function(data){Firebug.Console.log(data);});
 };
-  sendHeroku(note); 
+  sendRemoveHeroku(note); 
 
             }
         }
@@ -1160,31 +1216,31 @@ userBlursNote: function(event)
         // iwrapper2012.heroku.com
         function sendHeroku(note){
           var server_url = "http://iwrapper2012.heroku.com/notes/add.json?";
-		  var user = "noName";
-		  var comment = note.text;
-		  var left = note.left;
-		  var top = note.top;
-		  var width = note.width;
-		  var height = note.height;
-		  var url = note.url;
-		  var backcolor = note.backColor;
-		  var key = note.key; // ページごとの固有ID
-		
-		  var param = {
-		    user : user,
-		    comment : comment,
-		    left : left,
-		    top : top,
-		    width : width,
-		    height : height,
-		    url : url,
-		    backcolor : backcolor,
-		    key : key,
-		    callback : '?',
-		     };
-		  $.getJSON(server_url, param, function(data){console.log(data);});
-		};
-	  note = uiNote.note;
+  var user = "noName";
+  var comment = note.text;
+  var left = note.left;
+  var top = note.top;
+  var width = note.width;
+  var height = note.height;
+  var url = note.url;
+  var backcolor = note.backColor;
+  var key = note.key; // ページごとの固有ID
+
+  var param = {
+    user : user,
+    comment : comment,
+    left : left,
+    top : top,
+    width : width,
+    height : height,
+    url : url,
+    backcolor : backcolor,
+    key : key,
+    callback : '?',
+     };
+  $.getJSON(server_url, param, function(data){console.log(data);});
+};
+  note = uiNote.note;
       sendHeroku(note); 
 
     }
